@@ -7,7 +7,7 @@
     <RecommendView :recommends="recommend" />
     <Feature/>
     <tab-control :titles="['流行','新款','精选']" class="tab-control" />
-
+    <goods-list :goods="goods['pop'].list"/>
     <ul>
       <li>1</li>
       <li>1</li>
@@ -70,6 +70,7 @@ import Feature from "./childComps/Feature";
 
 import NavBar from "components/common/navbar/NavBar";
 import TabControl from "components/content/tabControl/tabControl";
+import GoodsList from "components/content/goods/GoodsList";
 
 import {getHomrMultidata,getHomeGoods} from "network/home";
 
@@ -80,7 +81,8 @@ export default {
     RecommendView,
     Feature,
     NavBar,
-    TabControl
+    TabControl,
+    GoodsList
   },
   data(){
     return{
@@ -88,14 +90,16 @@ export default {
       recommend:[],
       goods:{//流行，新款，精选
         'pop':{page:0,list:[]},
-        'news':{page:0,list:[]},
+        'new':{page:0,list:[]},
         'sell':{page:0,list:[]}
       }
     }
   },
   created() {
     this.getHomrMultidata();
-    this.getHomeGoods();
+    this.getHomeGoods('pop');
+    this.getHomeGoods('new');
+    this.getHomeGoods('sell');
   },
   methods:{
     getHomrMultidata() {
@@ -105,10 +109,13 @@ export default {
         this.recommend = res.data.data.recommend.list;
       })
     },
-    getHomeGoods(){
+    getHomeGoods(type){
       //2、请求商品信息
-      getHomeGoods('pop',1).then(res => {
-
+      const page = this.goods[type].page+1;
+      getHomeGoods(type,page).then(res => {
+        //将一个数组push到另一个数组里
+        this.goods[type].list.push(...res.data.data.list);
+        this.goods[type].page += 1;
       })
     }
   }
@@ -131,6 +138,7 @@ export default {
 
 .tab-control{
   position: sticky;
-  top:44px
+  top:44px;
+  z-index: 5;
 }
 </style>
