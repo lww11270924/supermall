@@ -6,8 +6,8 @@
     <HomeSwiper :banners="banners" />
     <RecommendView :recommends="recommend" />
     <Feature/>
-    <tab-control :titles="['流行','新款','精选']" class="tab-control" />
-    <goods-list :goods="goods['pop'].list"/>
+    <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" class="tab-control" />
+    <goods-list :goods="showGoods"/>
     <ul>
       <li>1</li>
       <li>1</li>
@@ -92,7 +92,8 @@ export default {
         'pop':{page:0,list:[]},
         'new':{page:0,list:[]},
         'sell':{page:0,list:[]}
-      }
+      },
+      currentType:'pop'
     }
   },
   created() {
@@ -101,7 +102,27 @@ export default {
     this.getHomeGoods('new');
     this.getHomeGoods('sell');
   },
+  computed:{
+    showGoods(){
+      return this.goods[this.currentType].list
+    }
+  },
   methods:{
+    //事件监听
+    tabClick(index){
+      switch (index){
+        case 0:
+          this.currentType = 'pop'
+          break
+        case 1:
+          this.currentType = 'new'
+          break
+        case 2:
+          this.currentType = 'sell'
+          break
+      }
+    },
+    // 网络请求
     getHomrMultidata() {
       //1请求多个数据
       getHomrMultidata().then(res => {
