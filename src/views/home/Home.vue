@@ -3,64 +3,15 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
-    <HomeSwiper :banners="banners" />
-    <RecommendView :recommends="recommend" />
-    <Feature/>
-    <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" class="tab-control" />
-    <goods-list :goods="showGoods"/>
-    <ul>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li><li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-
-    </ul>
-
-
+    <Scroll class="home-content">
+      <HomeSwiper :banners="banners" />
+      <RecommendView :recommends="recommend" />
+      <Feature/>
+      <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" class="tab-control" />
+      <goods-list :goods="showGoods"/>
+    </Scroll>
   </div>
+
 </template>
 
 <script>
@@ -74,6 +25,8 @@ import GoodsList from "components/content/goods/GoodsList";
 
 import {getHomrMultidata,getHomeGoods} from "network/home";
 
+import Scroll from "components/common/scroll/Scroll";
+
 export default {
   name: "Home",
   components:{
@@ -82,7 +35,8 @@ export default {
     Feature,
     NavBar,
     TabControl,
-    GoodsList
+    GoodsList,
+    Scroll
   },
   data(){
     return{
@@ -161,5 +115,9 @@ export default {
   position: sticky;
   top:44px;
   z-index: 5;
+}
+.home-content{
+  height: 350px;
+  overflow: hidden;
 }
 </style>

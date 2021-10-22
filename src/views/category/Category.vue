@@ -1,6 +1,7 @@
 <template>
   <div class="wrapper">
     <ul class="content">
+      <button class="btn" @click="btnClick">按钮</button>
       <li>分类列表1</li>
       <li>分类列表2</li>
       <li>分类列表3</li>
@@ -120,8 +121,24 @@ export default {
   },
   mounted() {
     this.scroll = new BScroll(document.querySelector('.wrapper'),{
-
+      probeType:3,
+      pullUpLoad:true
     })
+    this.scroll.on('scroll',(position) => {
+      // console.log(position);
+    })
+    this.scroll.on('pullingUp',() => {
+      console.log('上拉加载更多');
+      //发送网络请求，请求更多页的数据
+
+      //等数据请求完成，并且将新的数据展示出来后
+      this.scroll.finishPullUp();
+    })
+  },
+  methods:{
+    btnClick(){
+      console.log('点击按钮生效');
+    }
   }
 }
 </script>
