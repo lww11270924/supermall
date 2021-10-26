@@ -3,13 +3,20 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
-    <Scroll class="home-content">
+    <Scroll class="home-content"
+            ref="scroll"
+            :probe-type="3"
+            @scroll="contentScroll"
+            :pull-up-load="true"
+            @pullingUp="loadMore">
       <HomeSwiper :banners="banners" />
       <RecommendView :recommends="recommend" />
       <Feature/>
       <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" class="tab-control" />
       <goods-list :goods="showGoods"/>
     </Scroll>
+<!--    组件不能直接监听点击事件，需要通过native修饰符：@click.native-->
+    <back-top @click.native="backClick" v-show="isShow"/>
   </div>
 
 </template>
@@ -26,6 +33,7 @@ import GoodsList from "components/content/goods/GoodsList";
 import {getHomrMultidata,getHomeGoods} from "network/home";
 
 import Scroll from "components/common/scroll/Scroll";
+import BackTop from "components/content/backTop/BackTop";
 
 export default {
   name: "Home",
@@ -36,7 +44,8 @@ export default {
     NavBar,
     TabControl,
     GoodsList,
-    Scroll
+    Scroll,
+    BackTop
   },
   data(){
     return{
@@ -47,7 +56,8 @@ export default {
         'new':{page:0,list:[]},
         'sell':{page:0,list:[]}
       },
-      currentType:'pop'
+      currentType:'pop',
+      isShow:false
     }
   },
   created() {
@@ -76,6 +86,19 @@ export default {
           break
       }
     },
+    backClick() {
+      this.$refs.scroll.scrollTo(0,0,500);
+    },
+    contentScroll(position){
+      this.isShow = -position.y > 1000
+
+    },
+    loadMore(){
+      console.log('上拉加载更多');
+      this.getHomeGoods(this.currentType)
+
+      // this.$refs.scroll.scroll.refresh()
+    },
     // 网络请求
     getHomrMultidata() {
       //1请求多个数据
@@ -91,6 +114,8 @@ export default {
         //将一个数组push到另一个数组里
         this.goods[type].list.push(...res.data.data.list);
         this.goods[type].page += 1;
+
+        this.$refs.scroll.finishPullUp();
       })
     }
   }
@@ -100,6 +125,8 @@ export default {
 <style scoped>
 #home{
   padding-top: 44px;
+  height: 100vh;
+  position: relative;
 }
 .home-nav{
   background-color: var(--color-tint);
@@ -116,8 +143,13 @@ export default {
   top:44px;
   z-index: 5;
 }
+
 .home-content{
-  height: 350px;
   overflow: hidden;
+  position: absolute;
+  top: 44px;
+  bottom: 49px;
+  left: 0;
+  right: 0;
 }
 </style>
