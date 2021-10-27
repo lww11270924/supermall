@@ -12,7 +12,7 @@
       <HomeSwiper :banners="banners" />
       <RecommendView :recommends="recommend" />
       <Feature/>
-      <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" class="tab-control" />
+      <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick"/>
       <goods-list :goods="showGoods"/>
     </Scroll>
 <!--    组件不能直接监听点击事件，需要通过native修饰符：@click.native-->
@@ -34,6 +34,7 @@ import {getHomrMultidata,getHomeGoods} from "network/home";
 
 import Scroll from "components/common/scroll/Scroll";
 import BackTop from "components/content/backTop/BackTop";
+import {deboundce} from "common/utils";
 
 export default {
   name: "Home",
@@ -66,6 +67,13 @@ export default {
     this.getHomeGoods('new');
     this.getHomeGoods('sell');
   },
+  mounted() {
+    const refresh = deboundce(this.$refs.scroll.refresh,200)
+    // 监听item中图片加载完成
+    this.$bus.$on('itemImageLoad',() => {
+      refresh();
+    })
+  },
   computed:{
     showGoods(){
       return this.goods[this.currentType].list
@@ -94,7 +102,6 @@ export default {
 
     },
     loadMore(){
-      console.log('上拉加载更多');
       this.getHomeGoods(this.currentType)
 
       // this.$refs.scroll.scroll.refresh()
@@ -115,6 +122,7 @@ export default {
         this.goods[type].list.push(...res.data.data.list);
         this.goods[type].page += 1;
 
+        //完成上拉加载更多
         this.$refs.scroll.finishPullUp();
       })
     }
@@ -136,12 +144,6 @@ export default {
   top: 0;
   right: 0;
   z-index: 9;
-}
-
-.tab-control{
-  position: sticky;
-  top:44px;
-  z-index: 5;
 }
 
 .home-content{
