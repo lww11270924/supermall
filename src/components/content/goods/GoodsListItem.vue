@@ -1,6 +1,7 @@
 <template>
   <div class="goods-item" @click="itemClick">
-    <img :src="goodsItem.show.img" @load="imgLoad">
+<!--    goodsItem下的图片需要判断的原因：是因为首页和详情页图片所在位置不同-->
+    <img :src="goodsItem.show?goodsItem.show.img:goodsItem.image" @load="imgLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -20,10 +21,18 @@ export default {
       }
     }
   },
+  computed:{
+    // goodsItem下的图片需要判断的原因：是因为首页和详情页图片所在位置不同
+    showImage(){
+      return this.product.image || this.product.show.img
+    }
+  },
   methods:{
     imgLoad(){
       //监听事件总线$bus
-      this.$bus.$emit('itemImageLoad')
+      if(this.$route.path.indexOf('/home') == 0) {
+        this.$bus.$emit('itemImageLoad')
+      }
     },
     itemClick(){
       this.$router.push('/detail/'+this.goodsItem.iid)
