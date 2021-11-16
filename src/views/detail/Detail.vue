@@ -1,7 +1,10 @@
 <template>
   <div id="detail">
     <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"/>
-    <scroll class="detail-content" ref="scroll" :probe-type="3" @scroll="contentScroll">
+    <scroll class="detail-content"
+            ref="scroll"
+            :probe-type="3"
+            @scroll="contentScroll">
 <!--      属性用-代替驼峰，例如：topImage 应该变为：top-image-->
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods" />
@@ -11,6 +14,9 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo" />
       <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
+    <detail-bottom-bar @addToCart="addToCart"/>
+    <!--    组件不能直接监听点击事件，需要通过native修饰符：@click.native-->
+    <back-top @click.native="backClick" v-show="isShow"/>
   </div>
 </template>
 
@@ -22,13 +28,14 @@ import DetailShopInfo from "./childComps/DetailShopInfo";
 import DetailGoodsInfo from "./childComps/DetailGoodsInfo";
 import DetailParamInfo from "./childComps/DetailParamInfo";
 import DetailCommentInfo from "./childComps/DetailCommentInfo";
+import DetailBottomBar from "./childComps/DetailBottomBar";
 
 import GoodsList from "components/content/goods/GoodsList";
-
 import Scroll from "components/common/scroll/Scroll";
 
 import {getDetail,Goods,Shop,GoodsParam,getRecommend} from "network/detail";
-import {deboundce} from "../../common/utils";
+import {deboundce} from "common/utils";
+import {backTopmixin} from "common/mixin";
 
 
 export default {
@@ -42,8 +49,10 @@ export default {
     DetailParamInfo,
     DetailCommentInfo,
     GoodsList,
+    DetailBottomBar,
     Scroll
   },
+  mixins:[backTopmixin],
   data(){
     return{
       iid:null,
@@ -96,6 +105,7 @@ export default {
         this.themeTopYs.push(this.$refs.params.$el.offsetTop);
         this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
         this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+        this.themeTopYs.push(Number.MAX_VALUE);
       },100)
       // this.$nextTick(() => {
         //根据最新的数据，DOM已经渲染出来
@@ -114,8 +124,6 @@ export default {
       this.recommends = res.data.data.list;
     })
   },
-  mounted() {
-  },
   methods:{
     imageLoad(){
       this.$refs.scroll.refresh();
@@ -131,13 +139,35 @@ export default {
 
       //2对比
       let len = this.themeTopYs.length;
-      for(let i = 0; i<len;i++){
-        if(this.currentIndex !== i && ((i<len-1 && positionY>=this.themeTopYs[i] && positionY<this.themeTopYs[i+1]) || (i === len-1 && positionY >= this.themeTopYs[i]))){
-          console.log(i);
-          this.currentIndex = i;
-          this.$refs.nav.currentIndex = this.currentIndex;
+      for(let i = 0; i<len-1;i++){
+        if(this.currentIndex !== i && (positionY > this.themeTopYs[i] && positionY < this.themeTopYs[i+1])){
+            this.currentIndex = i;
+            this.$refs.nav.currentIndex = this.currentIndex;
         }
+        // if(this.currentIndex !== i && ((i<len-1 && positionY>=this.themeTopYs[i] && positionY<this.themeTopYs[i+1]) || (i === len-1 && positionY >= this.themeTopYs[i]))){
+        //   this.currentIndex = i;
+        //   this.$refs.nav.currentIndex = this.currentIndex;
+        // }
+
+        //3判断back是否显示
+        this.isShow = -position.y > 1000
+
+        //4决定tabControl是否吸顶（position:fixed）
+        this.isTabFixed = -position.y>this.tabOffsetTop
       }
+    },
+    addToCart(){
+      //1获取商品信息
+      const product = {}
+      product.image = this.topImages[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.price = this.goods.realPrice;
+      product.iid = this.iid;
+
+      //2将商品添加到购物车
+
+
     }
   }
 }
@@ -159,7 +189,7 @@ export default {
 .detail-content{
   position: absolute;
   top: 44px;
-  bottom: 60px;
+  bottom: 49px;
 }
 
 </style>

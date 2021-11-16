@@ -37,8 +37,8 @@ import GoodsList from "components/content/goods/GoodsList";
 import {getHomrMultidata,getHomeGoods} from "network/home";
 
 import Scroll from "components/common/scroll/Scroll";
-import BackTop from "components/content/backTop/BackTop";
 import {deboundce} from "common/utils";
+import {backTopmixin} from "common/mixin";
 
 export default {
   name: "Home",
@@ -49,9 +49,9 @@ export default {
     NavBar,
     TabControl,
     GoodsList,
-    Scroll,
-    BackTop
+    Scroll
   },
+  mixins:[backTopmixin],
   data(){
     return{
       banners:[],
@@ -62,7 +62,6 @@ export default {
         'sell':{page:0,list:[]}
       },
       currentType:'pop',
-      isShow:false,
       tabOffsetTop :0,
       isTabFixed:false
     }
@@ -106,9 +105,6 @@ export default {
       }
       this.$refs.tabControl1.currentIndex = index;
       this.$refs.tabControl2.currentIndex = index;
-    },
-    backClick() {
-      this.$refs.scroll.scrollTo(0,0,500);
     },
     contentScroll(position){
       //1、判断back是否显示
