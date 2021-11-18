@@ -1,7 +1,7 @@
 <template>
   <div id="shop-item">
     <div class="item-selector">
-      <CheckButton @checkBtnClick="checkedChange" v-model="itemInfo.checked"></CheckButton>
+      <CheckButton :isChecked="itemInfo.checked" @click.native="checkClick"/>
     </div>
     <div class="item-img">
       <img :src="itemInfo.image" alt="商品图片">
@@ -33,6 +33,9 @@ export default {
   },
   methods: {
     checkedChange: function () {
+      this.itemInfo.checked = !this.itemInfo.checked;
+    },
+    checkClick(){
       this.itemInfo.checked = !this.itemInfo.checked;
     }
   }

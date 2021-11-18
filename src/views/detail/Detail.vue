@@ -37,6 +37,7 @@ import {getDetail,Goods,Shop,GoodsParam,getRecommend} from "network/detail";
 import {deboundce} from "common/utils";
 import {backTopmixin} from "common/mixin";
 
+import {mapActions} from 'vuex';
 
 export default {
   name: "Detail",
@@ -125,6 +126,7 @@ export default {
     })
   },
   methods:{
+    ...mapActions(['addCart']),
     imageLoad(){
       this.$refs.scroll.refresh();
       this.getThemeTopY();
@@ -165,9 +167,13 @@ export default {
       product.price = this.goods.realPrice;
       product.iid = this.iid;
 
-      //2将商品添加到购物车
-      // this.$store.commit('addCart',product)
-      this.$store.dispatch('addCart',product)
+      //2将商品添加到购物车(1Promise 2mapActions)
+      this.addCart(product).then(res => {
+        // console.log(res);
+        this.$message('商品添加成功！');
+      })
+      // this.$store.dispatch('addCart',product).then(res => {
+      // })
 
     }
   }
@@ -193,4 +199,20 @@ export default {
   bottom: 49px;
 }
 
+</style>
+
+<style>
+.el-message {
+  margin-top: 40%;
+  min-width: 54%;
+  border-width: 0px;
+  background-color: var(--color-tint);
+
+}
+.el-message--info .el-message__content {
+  color: #fff;
+}
+.el-message .el-icon-info {
+  color: #fff;
+}
 </style>

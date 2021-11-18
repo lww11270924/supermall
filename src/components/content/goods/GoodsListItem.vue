@@ -1,7 +1,8 @@
 <template>
   <div class="goods-item" @click="itemClick">
 <!--    goodsItem下的图片需要判断的原因：是因为首页和详情页图片所在位置不同-->
-    <img :src="goodsItem.show?goodsItem.show.img:goodsItem.image" @load="imgLoad">
+<!--    <img :src="goodsItem.show?goodsItem.show.img:goodsItem.image" @load="imgLoad">-->
+    <img v-lazy="goodsItem.show?goodsItem.show.img:goodsItem.image" @load="imgLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
