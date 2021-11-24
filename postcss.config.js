@@ -9,6 +9,7 @@ module.exports = {
       viewportUnit: 'vw', //指定需要转换成的视口单位，建议使用vw
       // selectorBlankList: ['ignore', 'tab-bar', 'tab-bar-item'], //指定不需要转换的类
       minPixelValue: 1, //小于或等于‘1px’不转换为视口单位
+      // exclude:[/TabBar/],//表示排除以TabBar开头的文件
       mediaQuery: false//允许在媒体查询中转换为‘px’
     }
   }
